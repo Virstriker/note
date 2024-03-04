@@ -534,6 +534,76 @@
                 notesContainer.appendChild(noteElement);
             });
         };
+        const toggleLike = (noteId) => {
+            const likeButton = document.getElementById(`likeButton-${noteId}`);
+            const likeCountElement = document.getElementById(`likeCount-${noteId}`);
+
+            let likedNotes = JSON.parse(localStorage.getItem('likedNotes')) || [];
+
+            if (likedNotes.includes(noteId)) {
+                // Unlike
+                likedNotes = likedNotes.filter((id) => id !== noteId);
+                likeButton.innerHTML = '🤍'; // Heart emoji for unlike
+            } else {
+                // Like
+                likedNotes.push(noteId);
+                likeButton.innerHTML = '❤️'; // Heart emoji for like
+            }
+
+            localStorage.setItem('likedNotes', JSON.stringify(likedNotes));
+
+            // Update like count
+            likeCountElement.innerHTML = `${getLikeCount(noteId)} people liked this`;
+        };
+
+        // Function to get the like count
+        const getLikeCount = (noteId) => {
+            const likedNotes = JSON.parse(localStorage.getItem('likedNotes')) || [];
+            return likedNotes.filter((id) => id === noteId).length;
+        };
+
+        // Function to display notes with likes
+        const displayNotesWithLikes = (notes) => {
+            notesContainer.innerHTML = '';
+            notesContainer.classList.add('fade-in-slide-down');
+
+            notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
+                    <br>
+                    <button onclick="deleteNote(${note.id})">Delete</button>
+                    <button onclick="updateNote(${note.id}, '${note.title}', '${note.content}')">Update</button>
+                    <button onclick="toggleLike(${note.id})" id="likeButton-${note.id}">🤍</button> <!-- Initial state as unlike -->
+                    <span id="likeCount-${note.id}">${getLikeCount(note.id)} people liked this</span>`;
+
+                notesContainer.appendChild(noteElement);
+            });
+
+            // Add pagination controls
+            const totalPages = Math.ceil(notes.length / pageSize);
+            addPaginationControls(page, totalPages);
+        };
+
+        // Fetch and display notes with likes
+        const fetchAndDisplayNotesWithLikes = async (page = 1, pageSize = 5) => {
+            try {
+                showLoader();
+                const response = await fetch(apiUrl);
+                const allNotes = await response.json();
+
+                const startIdx = (page - 1) * pageSize;
+                const endIdx = startIdx + pageSize;
+                const notesToDisplay = allNotes.slice(startIdx, endIdx);
+
+                displayNotesWithLikes(notesToDisplay);
+            } finally {
+                hideLoader();
+            }
+        };
+
+        // Initial fetch and display notes with likes
+        fetchAndDisplayNotesWithLikes();
     </script>
 </body>
 
