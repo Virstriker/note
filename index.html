@@ -106,29 +106,27 @@
             opacity: 1;
             transform: translateY(0);
         }
-
         .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
 
-        .pagination button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
+    .pagination button {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 0 5px;
+    }
 
-        .pagination button:hover,
-        .pagination button.active {
-            background-color: #45a049;
-        }
-
-        .modal {
+    .pagination button:hover,
+    .pagination button.active {
+        background-color: #45a049;
+    }
+    .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -150,7 +148,6 @@
             max-width: 400px;
             margin: 0 auto;
         }
-
         .search-container {
             text-align: center;
             margin: 20px 0;
@@ -177,9 +174,8 @@
         #searchButton:hover {
             background-color: #45a049;
         }
-
-        /* Loader styles */
-        .loader-container {
+         /* Loader styles */
+         .loader-container {
             display: none;
             position: fixed;
             top: 0;
@@ -202,57 +198,52 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
         /* Notification styles */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 3;
-            max-width: 300px;
-        }
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3;
+    max-width: 300px;
+}
 
-        .notification {
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #4caf50;
-            color: #fff;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.5s, transform 0.5s;
-        }
+.notification {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4caf50;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
 
-        .notification.success {
-            background-color: #4caf50;
-        }
+.notification.success {
+    background-color: #4caf50;
+}
 
-        .notification.error {
-            background-color: #e74c3c;
-        }
+.notification.error {
+    background-color: #e74c3c;
+}
+
     </style>
 </head>
 
 <body>
     <!-- Notification Container -->
-    <div id="notificationContainer" class="notification-container"></div>
+<div id="notificationContainer" class="notification-container"></div>
 
-    <!-- Loader -->
-    <div class="loader-container" id="loaderContainer">
-        <div class="loader"></div>
-    </div>
+        <!-- Loader -->
+        <div class="loader-container" id="loaderContainer">
+            <div class="loader"></div>
+        </div>
 
     <button id="startButton" onclick="openModal()">Add New Note</button>
     <div class="search-container">
@@ -280,56 +271,58 @@
     <script>
         const apiUrl = 'https://www.mynotes.somee.com/api/Notes';
 
-        // Loader elements
-        const loaderContainer = document.getElementById('loaderContainer');
+                // Loader elements
+                const loaderContainer = document.getElementById('loaderContainer');
 
-        // Function to show loader
-        const showLoader = () => {
-            loaderContainer.style.display = 'flex';
-        };
+// Function to show loader
+const showLoader = () => {
+    loaderContainer.style.display = 'flex';
+};
 
-        // Function to hide loader
-        const hideLoader = () => {
-            loaderContainer.style.display = 'none';
-        };
+
+
+// Function to hide loader
+const hideLoader = () => {
+    loaderContainer.style.display = 'none';
+};
 
         const startButton = document.getElementById('startButton');
         const noteForm = document.getElementById('noteForm');
         const notesContainer = document.getElementById('notes-container');
-        var allNotes;
+        var allNotes; 
         const notificationContainer = document.getElementById('notificationContainer');
 
-        const showNotification = (message, type = 'success') => {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerText = message;
+const showNotification = (message, type = 'success') => {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerText = message;
 
-            notificationContainer.appendChild(notification);
+    notificationContainer.appendChild(notification);
 
-            setTimeout(() => {
-                notification.style.opacity = '1';
-                notification.style.transform = 'translateY(0)';
-            }, 10);
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
 
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(-20px)';
-            }, 3000);
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+    }, 3000);
 
-            setTimeout(() => {
-                notification.remove();
-            }, 3500);
-        };
+    setTimeout(() => {
+        notification.remove();
+    }, 3500);
+};
 
-        // Function to show success notification
-        const showSuccessNotification = (message) => {
-            showNotification(message, 'success');
-        };
+// Function to show success notification
+const showSuccessNotification = (message) => {
+    showNotification(message, 'success');
+};
 
-        // Function to show error notification
-        const showErrorNotification = (message) => {
-            showNotification(message, 'error');
-        };
+// Function to show error notification
+const showErrorNotification = (message) => {
+    showNotification(message, 'error');
+};
 
         // Function to show the form and hide the button
         const showForm = () => {
@@ -337,37 +330,37 @@
             noteForm.style.display = 'block';
         };
         const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
-            try {
-                const response = await fetch(apiUrl);
-                this.allNotes = await response.json();
+        try {
+            const response = await fetch(apiUrl);
+            this.allNotes = await response.json();
 
-                const startIdx = (page - 1) * pageSize;
-                const endIdx = startIdx + pageSize;
-                const notesToDisplay = allNotes.slice(startIdx, endIdx);
+            const startIdx = (page - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+            const notesToDisplay = allNotes.slice(startIdx, endIdx);
 
-                notesContainer.innerHTML = '';
-                notesContainer.classList.add('fade-in-slide-down');
+            notesContainer.innerHTML = '';
+            notesContainer.classList.add('fade-in-slide-down');
 
-                notesToDisplay.forEach(note => {
-                    const noteElement = document.createElement('div');
-                    noteElement.className = 'note';
-                    noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
+            notesToDisplay.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
                     <br>
                     <button onclick="deleteNote(${note.id})">Delete</button>
                     <button onclick="updateNote(${note.id}, '${note.title}', '${note.content}')">Update</button>`;
 
-                    notesContainer.appendChild(noteElement);
-                });
+                notesContainer.appendChild(noteElement);
+            });
 
-                // Add pagination controls
-                const totalPages = Math.ceil(allNotes.length / pageSize);
-                addPaginationControls(page, totalPages);
-            } catch (error) {
-                console.error('Error fetching notes:', error);
-            }
-        };
-        // Function to fetch and display notes with loader
-        const fetchAndDisplayNotesWithLoader = async (page = 1, pageSize = 5) => {
+            // Add pagination controls
+            const totalPages = Math.ceil(allNotes.length / pageSize);
+            addPaginationControls(page, totalPages);
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+        }
+    };
+     // Function to fetch and display notes with loader
+     const fetchAndDisplayNotesWithLoader = async (page = 1, pageSize = 5) => {
             try {
                 showLoader();
                 await fetchAndDisplayNotes(page, pageSize);
@@ -375,69 +368,69 @@
                 hideLoader();
             }
         };
-        const addPaginationControls = (currentPage, totalPages) => {
-            const paginationContainer = document.createElement('div');
-            paginationContainer.className = 'pagination';
+    const addPaginationControls = (currentPage, totalPages) => {
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'pagination';
 
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i;
-                pageButton.onclick = () => fetchAndDisplayNotes(i);
-                if (i === currentPage) {
-                    pageButton.classList.add('active');
-                }
-                paginationContainer.appendChild(pageButton);
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.onclick = () => fetchAndDisplayNotes(i);
+            if (i === currentPage) {
+                pageButton.classList.add('active');
             }
+            paginationContainer.appendChild(pageButton);
+        }
 
-            notesContainer.appendChild(paginationContainer);
-        };
-
+        notesContainer.appendChild(paginationContainer);
+    };
+      
         const addNote = async (title, content) => {
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        title,
-                        content
-                    }),
-                });
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                content
+            }),
+        });
 
-                if (response.ok) {
-                    fetchAndDisplayNotes();
-                    noteForm.reset();
-                    showSuccessNotification('Note added successfully!');
-                } else {
-                    console.error('Failed to add note:', response.statusText);
-                    showErrorNotification('Failed to add note');
-                }
-            } catch (error) {
-                console.error('Error adding note:', error);
-                showErrorNotification('Error adding note');
-            }
-        };
+        if (response.ok) {
+            fetchAndDisplayNotes();
+            noteForm.reset();
+            showSuccessNotification('Note added successfully!');
+        } else {
+            console.error('Failed to add note:', response.statusText);
+            showErrorNotification('Failed to add note');
+        }
+    } catch (error) {
+        console.error('Error adding note:', error);
+        showErrorNotification('Error adding note');
+    }
+};
 
 
         const deleteNote = async (id) => {
-            try {
-                const response = await fetch(`${apiUrl}/${id}`, {
-                    method: 'DELETE',
-                });
+    try {
+        const response = await fetch(`${apiUrl}/${id}`, {
+            method: 'DELETE',
+        });
 
-                if (response.ok) {
-                    fetchAndDisplayNotes();
-                    showSuccessNotification('Note deleted successfully!');
-                } else {
-                    console.error('Failed to delete note:', response.statusText);
-                    showErrorNotification('Failed to delete note');
-                }
-            } catch (error) {
-                console.error('Error deleting note:', error);
-                showErrorNotification('Error deleting note');
-            }
-        };
+        if (response.ok) {
+            fetchAndDisplayNotes();
+            showSuccessNotification('Note deleted successfully!');
+        } else {
+            console.error('Failed to delete note:', response.statusText);
+            showErrorNotification('Failed to delete note');
+        }
+    } catch (error) {
+        console.error('Error deleting note:', error);
+        showErrorNotification('Error deleting note');
+    }
+};
 
         // Function to update a note
         const updateNote = async (id, title, content) => {
@@ -468,7 +461,7 @@
                 }
             }
         };
-
+        
         // Event listener for form submission
         noteForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -534,76 +527,6 @@
                 notesContainer.appendChild(noteElement);
             });
         };
-        const toggleLike = (noteId) => {
-            const likeButton = document.getElementById(`likeButton-${noteId}`);
-            const likeCountElement = document.getElementById(`likeCount-${noteId}`);
-
-            let likedNotes = JSON.parse(localStorage.getItem('likedNotes')) || [];
-
-            if (likedNotes.includes(noteId)) {
-                // Unlike
-                likedNotes = likedNotes.filter((id) => id !== noteId);
-                likeButton.innerHTML = '🤍'; // Heart emoji for unlike
-            } else {
-                // Like
-                likedNotes.push(noteId);
-                likeButton.innerHTML = '❤️'; // Heart emoji for like
-            }
-
-            localStorage.setItem('likedNotes', JSON.stringify(likedNotes));
-
-            // Update like count
-            likeCountElement.innerHTML = `${getLikeCount(noteId)} people liked this`;
-        };
-
-        // Function to get the like count
-        const getLikeCount = (noteId) => {
-            const likedNotes = JSON.parse(localStorage.getItem('likedNotes')) || [];
-            return likedNotes.filter((id) => id === noteId).length;
-        };
-
-        // Function to display notes with likes
-        const displayNotesWithLikes = (notes) => {
-            notesContainer.innerHTML = '';
-            notesContainer.classList.add('fade-in-slide-down');
-
-            notes.forEach(note => {
-                const noteElement = document.createElement('div');
-                noteElement.className = 'note';
-                noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-                    <br>
-                    <button onclick="deleteNote(${note.id})">Delete</button>
-                    <button onclick="updateNote(${note.id}, '${note.title}', '${note.content}')">Update</button>
-                    <button onclick="toggleLike(${note.id})" id="likeButton-${note.id}">🤍</button> <!-- Initial state as unlike -->
-                    <span id="likeCount-${note.id}">${getLikeCount(note.id)} people liked this</span>`;
-
-                notesContainer.appendChild(noteElement);
-            });
-
-            // Add pagination controls
-            const totalPages = Math.ceil(notes.length / pageSize);
-            addPaginationControls(page, totalPages);
-        };
-
-        // Fetch and display notes with likes
-        const fetchAndDisplayNotesWithLikes = async (page = 1, pageSize = 5) => {
-            try {
-                showLoader();
-                const response = await fetch(apiUrl);
-                const allNotes = await response.json();
-
-                const startIdx = (page - 1) * pageSize;
-                const endIdx = startIdx + pageSize;
-                const notesToDisplay = allNotes.slice(startIdx, endIdx);
-
-                displayNotesWithLikes(notesToDisplay);
-            } finally {
-                hideLoader();
-            }
-        };
-
-        // Initial fetch and display notes with likes
-        fetchAndDisplayNotesWithLikes();
     </script>
 </body>
 
