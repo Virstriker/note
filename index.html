@@ -259,7 +259,7 @@
         <input type="text" id="searchBar" placeholder="Search by Title" oninput="handleSearchInput()">
         <button id="searchButton" onclick="searchNotes()">Search</button>
         <button id="searchMyCommentsButton" onclick="showAllComments()">Search My Comments</button>
-</div>
+    </div>
     </div>
     <!-- Modal -->
     <div id="myModal" class="modal">
@@ -344,11 +344,21 @@
         const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
             try {
                 const response = await fetch(apiUrl);
-                this.allNotes = await response.json();
+                const fetchedNotes = await response.json();
+
+                // Decode special characters in titles and contents
+                const decodedNotes = fetchedNotes.map(note => ({
+                    ...note,
+                    title: decodeURIComponent(note.title),
+                    content: decodeURIComponent(note.content),
+                }));
+
+                // Reverse the entire array
+                const reversedNotes = decodedNotes.reverse();
 
                 const startIdx = (page - 1) * pageSize;
                 const endIdx = startIdx + pageSize;
-                const notesToDisplay = allNotes.slice(startIdx, endIdx);
+                const notesToDisplay = reversedNotes.slice(startIdx, endIdx);
 
                 notesContainer.innerHTML = '';
                 notesContainer.classList.add('fade-in-slide-down');
@@ -357,20 +367,21 @@
                     const noteElement = document.createElement('div');
                     noteElement.className = 'note';
                     noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-                    <br>
-                    <button onclick="deleteNote(${note.id})">Delete</button>
-                    <button onclick="updateNote(${note.id}, '${note.title}', '${note.content}')">Update</button>`;
+                <br>
+                <button onclick="deleteNote(${note.id})">Delete</button>
+                <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
 
                     notesContainer.appendChild(noteElement);
                 });
 
                 // Add pagination controls
-                const totalPages = Math.ceil(allNotes.length / pageSize);
+                const totalPages = Math.ceil(reversedNotes.length / pageSize);
                 addPaginationControls(page, totalPages);
             } catch (error) {
                 console.error('Error fetching notes:', error);
             }
         };
+
         // Function to fetch and display notes with loader
         const fetchAndDisplayNotesWithLoader = async (page = 1, pageSize = 5) => {
             try {
@@ -396,33 +407,6 @@
 
             notesContainer.appendChild(paginationContainer);
         };
-
-        // const addNote = async (title, content) => {
-        //     try {
-        //         const response = await fetch(apiUrl, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify({
-        //                 title,
-        //                 content
-        //             }),
-        //         });
-
-        //         if (response.ok) {
-        //             fetchAndDisplayNotes();
-        //             noteForm.reset();
-        //             showSuccessNotification('Note added successfully!');
-        //         } else {
-        //             console.error('Failed to add note:', response.statusText);
-        //             showErrorNotification('Failed to add note');
-        //         }
-        //     } catch (error) {
-        //         console.error('Error adding note:', error);
-        //         showErrorNotification('Error adding note');
-        //     }
-        // };
         const addNote = async (title, content) => {
             try {
                 const response = await fetch(apiUrl, {
@@ -474,7 +458,6 @@
             }
         };
 
-        // Function to update a note
         const updateNote = async (id, title, content) => {
             const newTitle = prompt('Enter new title:', title);
             const newContent = prompt('Enter new content:', content);
@@ -503,7 +486,6 @@
                 }
             }
         };
-
         // Event listener for form submission
         noteForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -579,14 +561,14 @@
             }
         };
         const showAllComments = () => {
-        const allComments = localStorageNotes.map(comment => comment.content);
+            const allComments = localStorageNotes.map(comment => comment.content);
 
-        if (allComments.length > 0) {
-            alert(`All Comments:\n${allComments.join('\n')}`);
-        } else {
-            alert('No comments found.');
-        }
-    };
+            if (allComments.length > 0) {
+                alert(`All Comments:\n${allComments.join('\n')}`);
+            } else {
+                alert('No comments found.');
+            }
+        };
 
     </script>
 </body>
