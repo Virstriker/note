@@ -408,6 +408,10 @@
             notesContainer.appendChild(paginationContainer);
         };
         const addNote = async (title, content) => {
+            // Remove single quotes from title and content
+            const sanitizedTitle = title.replace(/'/g, '');
+            const sanitizedContent = content.replace(/'/g, '');
+
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -415,14 +419,14 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        title,
-                        content
+                        title: sanitizedTitle,
+                        content: sanitizedContent,
                     }),
                 });
 
                 if (response.ok) {
                     // Add note to local storage
-                    localStorageNotes.push({ title, content });
+                    localStorageNotes.push({ title: sanitizedTitle, content: sanitizedContent });
                     localStorage.setItem('notes', JSON.stringify(localStorageNotes));
 
                     fetchAndDisplayNotes();
