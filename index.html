@@ -9,17 +9,23 @@
 </head>
 
 <body>
+    <div class="application">
+        <img class="image" src="threads.png" alt="">
+        <span>150GRAM THREADS</span>
+    </div>
     <div id="notificationContainer" class="notification-container"></div>
 
     <div class="loader-container" id="loaderContainer">
         <div class="loader"></div>
     </div>
 
-    <button id="startButton" onclick="openModal()">Add New Note</button>
     <div class="search-container">
         <input type="text" id="searchBar" placeholder="Search by Title" oninput="handleSearchInput()">
         <button id="searchButton" onclick="searchNotes()">Search</button>
-        <button id="searchMyCommentsButton" onclick="showAllComments()">Search My Comments</button>
+        <div class="buttons">
+            <button id="searchMyCommentsButton" class="btn1" onclick="showAllComments()">My Notes</button>
+            <button id="startButton" class="btn1" onclick="openModal()">Add ➕</button>
+        </div>
     </div>
 
     <div id="myModal" class="modal">

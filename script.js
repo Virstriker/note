@@ -1,7 +1,7 @@
 const apiUrl = 'https://www.mynotes.somee.com/api/Notes';
 var localStorageNotes = JSON.parse(localStorage.getItem('notes')) || [];
 var likedNotes = JSON.parse(localStorage.getItem('likedNotes')) || [];
-
+var decodedNotes = [];
 // Loader elements
 const loaderContainer = document.getElementById('loaderContainer');
 
@@ -41,57 +41,13 @@ const showForm = () => {
     noteForm.style.display = 'block';
 };
 
-// Function to fetch and display notes
-// const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
-//     try {
-//         const response = await fetch(apiUrl);
-//         const fetchedNotes = await response.json();
-
-//         // Decode special characters in titles and contents
-//         const decodedNotes = fetchedNotes.map(note => ({
-//             ...note,
-//             title: decodeURIComponent(note.title),
-//             content: decodeURIComponent(note.content),
-//         }));
-
-//         // Reverse the entire array
-//         const reversedNotes = decodedNotes.reverse();
-
-//         const startIdx = (page - 1) * pageSize;
-//         const endIdx = startIdx + pageSize;
-//         const notesToDisplay = reversedNotes.slice(startIdx, endIdx);
-
-//         notesContainer.innerHTML = '';
-//         notesContainer.classList.add('fade-in-slide-down');
-
-//         notesToDisplay.forEach(note => {
-//             const noteElement = document.createElement('div');
-//             noteElement.className = 'note';
-//             noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-//                 <br>
-//                 <span>Likes: ${note.likes}</span>
-//                 <button onclick="handleLike(${note.id})">❤️</button>
-//                 <button onclick="deleteNote(${note.id})">Delete</button>
-//                 <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
-
-//             notesContainer.appendChild(noteElement);
-//         });
-
-//         // Add pagination controls
-//         const totalPages = Math.ceil(reversedNotes.length / pageSize);
-//         addPaginationControls(page, totalPages);
-//     } catch (error) {
-//         console.error('Error fetching notes:', error);
-//     }
-// };
-
 const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
     try {
         const response = await fetch(apiUrl);
         const fetchedNotes = await response.json();
 
         // Decode special characters in titles and contents
-        const decodedNotes = fetchedNotes.map(note => ({
+        decodedNotes = fetchedNotes.map(note => ({
             ...note,
             title: decodeURIComponent(note.title),
             content: decodeURIComponent(note.content),
@@ -114,7 +70,7 @@ const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
             const noteElement = document.createElement('div');
             noteElement.className = 'note';
             noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-            <br>Likes: ${note.likes}
+            <br>${note.likes}❤️
             <br>
             <button id="likeButton_${note.id}" onclick="handleLike(${note.id})">❤️</button>
             <button onclick="deleteNote(${note.id})">Delete</button>
@@ -352,24 +308,43 @@ const handleSearchInput = () => {
         searchButton.textContent = 'Search';
     }
 };
+
 const searchNotes = () => {
-    const searchTerm = document.getElementById('searchBar').value;
-    const filteredNotes = allNotes.filter(note => note.title.toLowerCase().includes(searchTerm));
+    const searchTerm = document.getElementById('searchBar').value.trim().toLowerCase();
 
-    notesContainer.innerHTML = '';
-    notesContainer.classList.add('fade-in-slide-down');
+    if (searchTerm === '') {
+        // If search input is empty, display all notes with pagination
+        fetchAndDisplayNotes();
+        return;
+    }
 
-    filteredNotes.forEach(note => {
-        const noteElement = document.createElement('div');
-        noteElement.className = 'note';
-        noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-            <br>
-            <button onclick="deleteNote(${note.id})">Delete</button>
-            <button onclick="updateNote(${note.id}, '${note.title}', '${note.content}')">Update</button>`;
+    const filteredNotes = decodedNotes.filter(note =>
+        note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm)
+    );
 
-        notesContainer.appendChild(noteElement);
-    });
+    if (filteredNotes.length > 0) {
+        notesContainer.innerHTML = '';
+        notesContainer.classList.add('fade-in-slide-down');
+
+        filteredNotes.forEach(note => {
+            const noteElement = document.createElement('div');
+            noteElement.className = 'note';
+            noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
+                <br>${note.likes}❤️
+                <br>
+                <button id="likeButton_${note.id}" onclick="handleLike(${note.id})">❤️</button>
+                <button onclick="deleteNote(${note.id})">Delete</button>
+                <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
+
+            notesContainer.appendChild(noteElement);
+        });
+    } else {
+        notesContainer.innerHTML = 'No matching notes found.';
+    }
 };
+
+
+
 const showComments = (title) => {
     const comments = localStorageNotes.filter(note => note.title === title);
 
@@ -380,11 +355,28 @@ const showComments = (title) => {
     }
 };
 const showAllComments = () => {
-    const allComments = localStorageNotes.map(comment => comment.content);
+    const notesInLocalStorage = localStorageNotes.map(note => note.content);
+    
+    if (notesInLocalStorage.length > 0) {
+        notesContainer.innerHTML = '';
+        notesContainer.classList.add('fade-in-slide-down');
 
-    if (allComments.length > 0) {
-        alert(`All Comments:\n${allComments.join('\n')}`);
+        decodedNotes.forEach(note => {
+            if (notesInLocalStorage.includes(note.content)) {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
+                    <br>${note.likes}❤️
+                    <br>
+                    <button id="likeButton_${note.id}" onclick="handleLike(${note.id})">❤️</button>
+                    <button onclick="deleteNote(${note.id})">Delete</button>
+                    <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
+
+                notesContainer.appendChild(noteElement);
+            }
+        });
     } else {
-        alert('No comments found.');
+        notesContainer.innerHTML = 'No notes found in localStorage.';
     }
 };
+
