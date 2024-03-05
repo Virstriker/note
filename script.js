@@ -42,6 +42,49 @@ const showForm = () => {
 };
 
 // Function to fetch and display notes
+// const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
+//     try {
+//         const response = await fetch(apiUrl);
+//         const fetchedNotes = await response.json();
+
+//         // Decode special characters in titles and contents
+//         const decodedNotes = fetchedNotes.map(note => ({
+//             ...note,
+//             title: decodeURIComponent(note.title),
+//             content: decodeURIComponent(note.content),
+//         }));
+
+//         // Reverse the entire array
+//         const reversedNotes = decodedNotes.reverse();
+
+//         const startIdx = (page - 1) * pageSize;
+//         const endIdx = startIdx + pageSize;
+//         const notesToDisplay = reversedNotes.slice(startIdx, endIdx);
+
+//         notesContainer.innerHTML = '';
+//         notesContainer.classList.add('fade-in-slide-down');
+
+//         notesToDisplay.forEach(note => {
+//             const noteElement = document.createElement('div');
+//             noteElement.className = 'note';
+//             noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
+//                 <br>
+//                 <span>Likes: ${note.likes}</span>
+//                 <button onclick="handleLike(${note.id})">❤️</button>
+//                 <button onclick="deleteNote(${note.id})">Delete</button>
+//                 <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
+
+//             notesContainer.appendChild(noteElement);
+//         });
+
+//         // Add pagination controls
+//         const totalPages = Math.ceil(reversedNotes.length / pageSize);
+//         addPaginationControls(page, totalPages);
+//     } catch (error) {
+//         console.error('Error fetching notes:', error);
+//     }
+// };
+
 const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
     try {
         const response = await fetch(apiUrl);
@@ -54,8 +97,11 @@ const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
             content: decodeURIComponent(note.content),
         }));
 
+        // Sort notes by the number of likes in descending order
+        const sortedNotes = decodedNotes.sort((a, b) => b.likes - a.likes);
+
         // Reverse the entire array
-        const reversedNotes = decodedNotes.reverse();
+        const reversedNotes = sortedNotes;
 
         const startIdx = (page - 1) * pageSize;
         const endIdx = startIdx + pageSize;
@@ -68,21 +114,41 @@ const fetchAndDisplayNotes = async (page = 1, pageSize = 5) => {
             const noteElement = document.createElement('div');
             noteElement.className = 'note';
             noteElement.innerHTML = `<strong>${note.title}</strong><br>${note.content}
-                <br>
-                <span>Likes: ${note.likes}</span>
-                <button onclick="handleLike(${note.id})">Like</button>
-                <button onclick="deleteNote(${note.id})">Delete</button>
-                <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
+            <br>Likes: ${note.likes}
+            <br>
+            <button id="likeButton_${note.id}" onclick="handleLike(${note.id})">❤️</button>
+            <button onclick="deleteNote(${note.id})">Delete</button>
+            <button onclick="updateNote(${note.id}, '${encodeURIComponent(note.title)}', '${encodeURIComponent(note.content)}')">Update</button>`;
 
             notesContainer.appendChild(noteElement);
         });
 
         // Add pagination controls
-        const totalPages = Math.ceil(reversedNotes.length / pageSize);
+        const totalPages = Math.ceil(sortedNotes.length / pageSize);
         addPaginationControls(page, totalPages);
     } catch (error) {
         console.error('Error fetching notes:', error);
     }
+};
+
+
+
+
+const addPaginationControls = (currentPage, totalPages) => {
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'pagination';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.onclick = () => fetchAndDisplayNotes(i);
+        if (i === currentPage) {
+            pageButton.classList.add('active');
+        }
+        paginationContainer.appendChild(pageButton);
+    }
+
+    notesContainer.appendChild(paginationContainer);
 };
 
 // Function to fetch and display notes with loader
